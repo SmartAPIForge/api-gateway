@@ -1,0 +1,15 @@
+version: "3"
+
+tasks:
+  build:
+    desc: "Build"
+    cmds:
+      - go build ./cmd/api-gateway/main.go
+  run-dev:
+    desc: "Run in dev"
+    cmds:
+      - go build ./cmd/api-gateway/main.go && ./main
+  run-prod:
+    desc: "Run in prod"
+    cmds:
+      - ./main
