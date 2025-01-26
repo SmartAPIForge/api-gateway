@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import {
   AuthClient,
   LoginRequest,
@@ -21,8 +21,9 @@ export class AuthService {
     this.authClient = this.client.getService<AuthClient>('Auth');
   }
 
-  register(request: RegisterRequest): Observable<RegisterResponse> {
-    return this.authClient.register(request);
+  register(request: RegisterRequest): Promise<RegisterResponse> {
+    const registerResponse = this.authClient.register(request);
+    return lastValueFrom(registerResponse);
   }
 
   login(request: LoginRequest): Promise<LoginResponse> {
@@ -30,8 +31,9 @@ export class AuthService {
     return lastValueFrom(loginResponse);
   }
 
-  validateUser(request: ValidateUserRequest): Observable<ValidateUserResponse> {
-    return this.authClient.validateUser(request);
+  validateUser(request: ValidateUserRequest): Promise<ValidateUserResponse> {
+    const validateResponse = this.authClient.validateUser(request);
+    return lastValueFrom(validateResponse);
   }
 
   refresh(request: RefreshRequest): Promise<RefreshResponse> {

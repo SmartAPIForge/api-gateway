@@ -14,9 +14,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() request: RegisterRequest) {
+  async register(@Body() request: RegisterRequest) {
     this.logger.log(`Register request: ${JSON.stringify(request)}`);
-    return this.authService.register(request);
+    return await this.authService.register(request);
   }
 
   @Post('login')
@@ -34,9 +34,9 @@ export class AuthController {
   }
 
   @Post('validate')
-  validateUser(@Body() request: ValidateUserRequest) {
+  async validateUser(@Body() request: ValidateUserRequest) {
     this.logger.log(`Validate user request: ${JSON.stringify(request)}`);
-    return this.authService.validateUser(request);
+    return await this.authService.validateUser(request);
   }
 
   @Post('refresh')
