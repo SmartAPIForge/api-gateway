@@ -1,8 +1,13 @@
-import { Body, Controller, Logger, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   LoginRequest,
+  RefreshRequest,
   RegisterRequest,
   ValidateUserRequest,
 } from 'protos/gen/ts/auth/auth';
@@ -20,17 +25,9 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(
-    @Body() request: LoginRequest,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async login(@Body() request: LoginRequest) {
     this.logger.log(`Login request: ${JSON.stringify(request)}`);
-    const { accessToken, refreshToken } = await this.authService.login(request);
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
-    return { token: accessToken };
+    return await this.authService.login(request);
   }
 
   @Post('validate')
@@ -40,18 +37,8 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    this.logger.log(`Refresh request: ${JSON.stringify(req.body)}`);
-    const { refreshToken: oldRefreshToken } = req.cookies;
-    const { accessToken, refreshToken: updatedRefreshToken } =
-      await this.authService.refresh({ refreshToken: oldRefreshToken });
-    res.cookie('refreshToken', updatedRefreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
-    return { token: accessToken };
+  async refresh(@Body() req: RefreshRequest) {
+    this.logger.log(`Refresh request: ${JSON.stringify(req)}`);
+    return await this.authService.refresh({ refreshToken: req.refreshToken });
   }
 }
