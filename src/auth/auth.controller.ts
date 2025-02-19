@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   LoginRequest,
@@ -6,6 +6,7 @@ import {
   RegisterRequest,
   ValidateUserRequest,
 } from 'protos/gen/ts/auth/auth';
+import { Role, ValidateHeaderDto } from './dto/validateHeaderDto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,9 +27,12 @@ export class AuthController {
   }
 
   @Post('validate')
-  async validateUser(@Body() request: ValidateUserRequest) {
-    this.logger.log(`Validate user request: ${JSON.stringify(request)}`);
-    return await this.authService.validateUser(request);
+  async validateUser(@Headers() headers: ValidateHeaderDto) {
+    this.logger.log(`Validate user request: ${JSON.stringify(headers)}`);
+    return await this.authService.validateUser({
+      accessToken: headers.authorization,
+      requiredRole: Role.DEFAULT,
+    });
   }
 
   @Post('refresh')

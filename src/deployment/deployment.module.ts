@@ -3,9 +3,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ChannelCredentials } from '@grpc/grpc-js';
 import { DeploymentController } from './deployment.controller';
 import { DeploymentService } from './deployment.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     ClientsModule.register([
       {
         name: 'DEPLOYMENT_PACKAGE',

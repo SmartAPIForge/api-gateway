@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { DeploymentService } from './deployment.service';
 import {
@@ -21,8 +22,13 @@ import {
   RemoveServerResponseDto,
 } from './dto/base';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
+import { RequiredRole } from '../auth/required-role.decorator';
+import { Role } from '../auth/dto/validateHeaderDto';
 
 @Controller('deployment')
+@RequiredRole(Role.ADMIN)
+@UseGuards(AuthGuard)
 export class DeploymentController {
   private readonly logger = new Logger(DeploymentController.name);
 
