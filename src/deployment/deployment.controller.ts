@@ -26,15 +26,15 @@ import { AuthGuard } from '../auth/auth.guard';
 import { RequiredRole } from '../auth/required-role.decorator';
 import { Role } from '../auth/dto/validateHeaderDto';
 
-@Controller('deployment')
-@RequiredRole(Role.ADMIN)
+@Controller('deployment/servers')
 @UseGuards(AuthGuard)
+@RequiredRole(Role.ADMIN)
 export class DeploymentController {
   private readonly logger = new Logger(DeploymentController.name);
 
   constructor(private readonly deploymentService: DeploymentService) {}
 
-  @Get('servers')
+  @Get()
   @ApiOperation({ summary: 'List all servers' })
   @ApiResponse({
     status: 200,
@@ -46,7 +46,7 @@ export class DeploymentController {
     return await this.deploymentService.getAllServers(req);
   }
 
-  @Post('servers')
+  @Post()
   @ApiOperation({ summary: 'Add a new server' })
   @ApiBody({ type: AddServerRequestDto })
   @ApiResponse({
@@ -59,7 +59,7 @@ export class DeploymentController {
     return await this.deploymentService.addServer(req);
   }
 
-  @Delete('servers/:id')
+  @Delete('/:id')
   @ApiOperation({ summary: 'Remove a server' })
   @ApiParam({ name: 'id', type: Number, description: 'Server ID' })
   @ApiResponse({

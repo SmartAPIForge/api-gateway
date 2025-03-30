@@ -1,0 +1,29 @@
+import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ChannelCredentials } from '@grpc/grpc-js';
+import { ProjectController } from './project.controller';
+import { ProjectService } from './project.service';
+import { AuthModule } from '../auth/auth.module';
+import {CodegenModule} from "../codegen/codegen.module";
+
+@Module({
+  imports: [
+    AuthModule,
+    ClientsModule.register([
+      {
+        name: 'PROJECT_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'project',
+          protoPath: 'node_modules/protos/proto/project/project.proto',
+          url: 'localhost:50053',
+          credentials: ChannelCredentials.createInsecure(),
+        },
+      },
+    ]),
+    CodegenModule,
+  ],
+  controllers: [ProjectController],
+  providers: [ProjectService],
+})
+export class ProjectModule {}

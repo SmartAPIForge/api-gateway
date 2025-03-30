@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { CodegenService } from './codegen.service';
+import { CodegenController } from './codegen.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ChannelCredentials } from '@grpc/grpc-js';
-import { DeploymentController } from './deployment.controller';
-import { DeploymentService } from './deployment.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -10,18 +10,19 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
     ClientsModule.register([
       {
-        name: 'DEPLOYMENT_PACKAGE',
+        name: 'CODEGEN_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          package: 'deployment',
-          protoPath: 'node_modules/protos/proto/deployment/deployment.proto',
-          url: 'localhost:50059',
+          package: 'codegen',
+          url: 'localhost:50052',
+          protoPath: 'node_modules/protos/proto/codegen/codegen.proto',
           credentials: ChannelCredentials.createInsecure(),
         },
       },
     ]),
   ],
-  controllers: [DeploymentController],
-  providers: [DeploymentService],
+  controllers: [CodegenController],
+  providers: [CodegenService],
+  exports: [CodegenService],
 })
-export class DeploymentModule {}
+export class CodegenModule {}
