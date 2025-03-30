@@ -15,7 +15,7 @@ import { AuthModule } from '../auth/auth.module';
         options: {
           package: 'deployment',
           protoPath: 'node_modules/protos/proto/deployment/deployment.proto',
-          url: 'localhost:50057',
+          url: 'localhost:50059',
           credentials: ChannelCredentials.createInsecure(),
         },
       },

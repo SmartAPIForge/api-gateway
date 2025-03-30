@@ -23,5 +23,6 @@ import { AuthModule } from '../auth/auth.module';
   ],
   controllers: [CodegenController],
   providers: [CodegenService],
+  exports: [CodegenService],
 })
 export class CodegenModule {}

@@ -10,8 +10,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { 
   RegisterRequestDto, 
   LoginRequestDto, 
-  RefreshRequestDto, 
-  ValidateResponseDto 
+  RefreshRequestDto,
 } from './dto/auth.dto';
 
 @ApiTags('Authentication')
