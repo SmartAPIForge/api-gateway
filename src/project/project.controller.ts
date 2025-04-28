@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, Headers,
   Logger,
   Param,
   Post,
@@ -14,88 +14,135 @@ import {
 import { ProjectService } from './project.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RequiredRole } from '../auth/required-role.decorator';
-import { Role } from '../auth/dto/validateHeaderDto';
-import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Role, ValidateHeaderDto } from '../auth/dto/validateHeaderDto';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   GetAllUserProjectsRequest,
-  InitProjectRequest,
   ProjectUniqueIdentifier,
-  UpdateProjectRequest,
   GetFilteredProjectsRequest,
   Owner
 } from 'protos/gen/ts/project/project';
 import { Observable, map } from 'rxjs';
+import { UsersService } from '../users/users.service';
+import {
+  GetAllProjectsRequestDto,
+  GetFilteredProjectsRequestDto,
+  ProjectsListResponseDto,
+  DeleteProjectResponseDto,
+  ProjectResponseDto,
+  InitProjectRequestDto,
+  UpdateProjectRequestDto
+} from './dto/project.dto';
 
+@ApiTags('Projects')
 @Controller('projects')
 @UseGuards(AuthGuard)
 @RequiredRole(Role.DEFAULT)
 export class ProjectController {
   private readonly logger = new Logger(ProjectController.name);
 
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(
+    private readonly projectService: ProjectService, 
+    private readonly usersService: UsersService,
+  ) { }
 
-  @Get('list')
+  @Get()
+  @RequiredRole(Role.DEFAULT)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all projects for a user' })
-  @ApiQuery({ name: 'owner', description: 'Project owner' })
-  @ApiQuery({ name: 'page', description: 'Page number', required: false })
-  @ApiQuery({ name: 'limit', description: 'Items per page', required: false })
+  @ApiResponse({ type: ProjectsListResponseDto, status: 200 })
   async getAllProjects(
-    @Query('owner') owner: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string
+    @Headers() headers: ValidateHeaderDto,
+    @Query() query: GetAllProjectsRequestDto,
   ) {
+    const user = await this.usersService.getUserByToken({
+      AccessToken: headers.authorization,
+    });
+
     const request: GetAllUserProjectsRequest = {
-      owner,
-      page: page || '1',
-      limit: limit || '10'
+      owner: user.Username,
+      page: query.page || '1',
+      limit: query.limit || '10'
     };
     this.logger.log(`Get all projects request: ${JSON.stringify(request)}`);
     return this.projectService.getAllUserProjects(request);
   }
 
   @Get('filtered')
+  @RequiredRole(Role.ADMIN)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get filtered projects' })
-  @ApiQuery({ name: 'page', description: 'Page number', required: false })
-  @ApiQuery({ name: 'limit', description: 'Items per page', required: false })
-  @ApiQuery({ name: 'owner', description: 'Project owner', required: false })
-  @ApiQuery({ name: 'status', description: 'Project status', required: false })
-  @ApiQuery({ name: 'namePrefix', description: 'Project name prefix', required: false })
+  @ApiResponse({ type: ProjectsListResponseDto, status: 200 })
   async getFilteredProjects(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('owner') owner?: string,
-    @Query('status') status?: string,
-    @Query('namePrefix') namePrefix?: string
+    @Query() query: GetFilteredProjectsRequestDto
   ) {
     const request: GetFilteredProjectsRequest = {
-      Page: page || '1',
-      Limit: limit || '10',
-      Owner: owner || '',
-      Status: status || '',
-      NamePrefix: namePrefix || ''
+      Page: query.page || '1',
+      Limit: query.limit || '10',
+      Owner: query.owner || '',
+      Status: query.status || '',
+      NamePrefix: query.namePrefix || ''
     };
     this.logger.log(`Get filtered projects request: ${JSON.stringify(request)}`);
     return this.projectService.getFilteredProjects(request);
   }
 
   @Post('init')
+  @RequiredRole(Role.DEFAULT)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Initialize a new project' })
-  async initProject(@Body() request: InitProjectRequest) {
+  @ApiBody({ type: InitProjectRequestDto })
+  @ApiResponse({ type: ProjectResponseDto, status: 201 })
+  async initProject(
+    @Headers() headers: ValidateHeaderDto,
+    @Body() request: InitProjectRequestDto
+  ) {
     this.logger.log(`Init project request: ${JSON.stringify(request)}`);
-    return this.projectService.initProject(request);
+
+    const user = await this.usersService.getUserByToken({
+      AccessToken: headers.authorization,
+    });
+
+    return this.projectService.initProject({
+      composeId: {
+        name: request.name,
+        owner: user.Username,
+      }
+    });
   }
 
   @Put('update')
+  @RequiredRole(Role.DEFAULT)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Update a project' })
-  async updateProject(@Body() request: UpdateProjectRequest) {
+  @ApiBody({ type: UpdateProjectRequestDto })
+  @ApiResponse({ type: ProjectResponseDto, status: 200 })
+  async updateProject(
+    @Headers() headers: ValidateHeaderDto,
+    @Body() request: UpdateProjectRequestDto
+  ) {
     this.logger.log(`Update project request: ${JSON.stringify(request)}`);
-    return this.projectService.updateProject(request);
+
+    const user = await this.usersService.getUserByToken({
+      AccessToken: headers.authorization,
+    });
+
+    return this.projectService.updateProject({
+      composeId: {
+        name: request.name,
+        owner: user.Username,
+      },
+      data: request.data,
+    });
   }
 
   @Delete(':owner/:name')
+  @RequiredRole(Role.DEFAULT)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete a project' })
   @ApiParam({ name: 'owner', description: 'Project owner' })
   @ApiParam({ name: 'name', description: 'Project name' })
+  @ApiResponse({ type: DeleteProjectResponseDto, status: 200 })
   async deleteProject(
     @Param('owner') owner: string,
     @Param('name') name: string
@@ -106,8 +153,11 @@ export class ProjectController {
   }
 
   @Sse('updates/:owner')
+  @RequiredRole(Role.DEFAULT)
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Stream project updates' })
   @ApiParam({ name: 'owner', description: 'Project owner' })
+  @ApiResponse({ type: ProjectResponseDto, status: 200 })
   streamUserProjectsUpdates(@Param('owner') owner: string): Observable<{ data: any }> {
     const request: Owner = { owner };
     this.logger.log(`Stream project updates request: ${JSON.stringify(request)}`);

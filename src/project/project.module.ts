@@ -4,11 +4,13 @@ import { ChannelCredentials } from '@grpc/grpc-js';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { AuthModule } from '../auth/auth.module';
-import {CodegenModule} from "../codegen/codegen.module";
+import { CodegenModule } from "../codegen/codegen.module";
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     AuthModule,
+    UsersModule,
     ClientsModule.register([
       {
         name: 'PROJECT_PACKAGE',
