@@ -28,6 +28,7 @@ export class UsersController {
       RoleId: query.roleId || Role.DEFAULT,
       NameStartsWith: query.nameStartsWith || '',
     });
+
     return {
       users: users.users.map(user => ({
         username: user.Username,
