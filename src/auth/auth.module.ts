@@ -13,7 +13,7 @@ import { AuthGuard } from './auth.guard';
         transport: Transport.GRPC,
         options: {
           package: 'auth',
-          url: 'localhost:50051',
+          url: process.env.AUTH_SERVICE_URL,
           protoPath: 'node_modules/protos/proto/auth/auth.proto',
           credentials: ChannelCredentials.createInsecure(),
         },

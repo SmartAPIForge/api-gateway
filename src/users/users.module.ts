@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { CodegenService } from './codegen.service';
-import { CodegenController } from './codegen.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
 import { ChannelCredentials } from '@grpc/grpc-js';
 import { AuthModule } from '../auth/auth.module';
 
@@ -10,19 +10,19 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
     ClientsModule.register([
       {
-        name: 'CODEGEN_PACKAGE',
+        name: 'USERS_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          package: 'codegen',
-          url: process.env.CODEGEN_SERVICE_URL,
-          protoPath: 'node_modules/protos/proto/codegen/codegen.proto',
+          package: 'auth',
+          url: process.env.AUTH_SERVICE_URL,
+          protoPath: 'node_modules/protos/proto/auth/auth.proto',
           credentials: ChannelCredentials.createInsecure(),
         },
       },
     ]),
   ],
-  controllers: [CodegenController],
-  providers: [CodegenService],
-  exports: [CodegenService],
+  controllers: [UsersController],
+  providers: [UsersService],
+  exports: [UsersService],
 })
-export class CodegenModule {}
+export class UsersModule {}

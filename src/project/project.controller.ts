@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
@@ -16,33 +17,22 @@ import { RequiredRole } from '../auth/required-role.decorator';
 import { Role } from '../auth/dto/validateHeaderDto';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import {
-  GetUniqueUserProjectRequest,
   GetAllUserProjectsRequest,
   InitProjectRequest,
   ProjectUniqueIdentifier,
-  UpdateProjectRequest
+  UpdateProjectRequest,
+  GetFilteredProjectsRequest,
+  Owner
 } from 'protos/gen/ts/project/project';
 import { Observable, map } from 'rxjs';
 
-@Controller('project')
+@Controller('projects')
 @UseGuards(AuthGuard)
 @RequiredRole(Role.DEFAULT)
 export class ProjectController {
   private readonly logger = new Logger(ProjectController.name);
 
   constructor(private readonly projectService: ProjectService) {}
-
-  @Get(':owner/:name')
-  @ApiOperation({ summary: 'Get a specific project' })
-  @ApiParam({ name: 'owner', description: 'Project owner' })
-  @ApiParam({ name: 'name', description: 'Project name' })
-  async getProject(@Param('owner') owner: string, @Param('name') name: string) {
-    const request: GetUniqueUserProjectRequest = {
-      composeId: { owner, name }
-    };
-    this.logger.log(`Get project request: ${JSON.stringify(request)}`);
-    return this.projectService.getUniqueUserProject(request);
-  }
 
   @Get('list')
   @ApiOperation({ summary: 'Get all projects for a user' })
@@ -63,10 +53,34 @@ export class ProjectController {
     return this.projectService.getAllUserProjects(request);
   }
 
+  @Get('filtered')
+  @ApiOperation({ summary: 'Get filtered projects' })
+  @ApiQuery({ name: 'page', description: 'Page number', required: false })
+  @ApiQuery({ name: 'limit', description: 'Items per page', required: false })
+  @ApiQuery({ name: 'owner', description: 'Project owner', required: false })
+  @ApiQuery({ name: 'status', description: 'Project status', required: false })
+  @ApiQuery({ name: 'namePrefix', description: 'Project name prefix', required: false })
+  async getFilteredProjects(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('owner') owner?: string,
+    @Query('status') status?: string,
+    @Query('namePrefix') namePrefix?: string
+  ) {
+    const request: GetFilteredProjectsRequest = {
+      Page: page || '1',
+      Limit: limit || '10',
+      Owner: owner || '',
+      Status: status || '',
+      NamePrefix: namePrefix || ''
+    };
+    this.logger.log(`Get filtered projects request: ${JSON.stringify(request)}`);
+    return this.projectService.getFilteredProjects(request);
+  }
+
   @Post('init')
   @ApiOperation({ summary: 'Initialize a new project' })
   async initProject(@Body() request: InitProjectRequest) {
-
     this.logger.log(`Init project request: ${JSON.stringify(request)}`);
     return this.projectService.initProject(request);
   }
@@ -78,14 +92,26 @@ export class ProjectController {
     return this.projectService.updateProject(request);
   }
 
-  @Sse(':owner/:name/status')
-  @ApiOperation({ summary: 'Watch project status changes' })
+  @Delete(':owner/:name')
+  @ApiOperation({ summary: 'Delete a project' })
   @ApiParam({ name: 'owner', description: 'Project owner' })
   @ApiParam({ name: 'name', description: 'Project name' })
-  watchProjectStatus(@Param('owner') owner: string, @Param('name') name: string): Observable<{ data: any }> {
+  async deleteProject(
+    @Param('owner') owner: string,
+    @Param('name') name: string
+  ) {
     const request: ProjectUniqueIdentifier = { owner, name };
-    this.logger.log(`Watch project status request: ${JSON.stringify(request)}`);
-    return this.projectService.watchProjectStatus(request).pipe(
+    this.logger.log(`Delete project request: ${JSON.stringify(request)}`);
+    return this.projectService.deleteProject(request);
+  }
+
+  @Sse('updates/:owner')
+  @ApiOperation({ summary: 'Stream project updates' })
+  @ApiParam({ name: 'owner', description: 'Project owner' })
+  streamUserProjectsUpdates(@Param('owner') owner: string): Observable<{ data: any }> {
+    const request: Owner = { owner };
+    this.logger.log(`Stream project updates request: ${JSON.stringify(request)}`);
+    return this.projectService.streamUserProjectsUpdates(request).pipe(
       map(event => ({ data: event }))
     );
   }

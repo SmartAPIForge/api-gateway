@@ -16,7 +16,7 @@ import {CodegenModule} from "../codegen/codegen.module";
         options: {
           package: 'project',
           protoPath: 'node_modules/protos/proto/project/project.proto',
-          url: 'localhost:50053',
+          url: process.env.PROJECT_SERVICE_URL,
           credentials: ChannelCredentials.createInsecure(),
         },
       },

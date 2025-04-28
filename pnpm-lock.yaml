@@ -23,9 +23,12 @@ importers:
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       protos:
         specifier: github:SmartAPIForge/protos#main
-        version: https://codeload.github.com/SmartAPIForge/protos/tar.gz/051b89e0c1fa5489ae3dc21bf40cd17443937efb
+        version: https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -1757,6 +1760,10 @@ packages:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
 
+  dotenv@16.5.0:
+    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
+    engines: {node: '>=12'}
+
   dprint-node@1.0.8:
     resolution: {integrity: sha512-iVKnUtYfGrYcW1ZAlfR/F59cUVL8QIhWoBJoSjkkdua/dkWIgjZfiLMeTjiB06X0ZLkQ0M2C1VbUj/CxkIf1zg==}
 
@@ -2886,8 +2893,8 @@ packages:
     resolution: {integrity: sha512-mRUWCc3KUU4w1jU8sGxICXH/gNS94DvI1gxqDvBzhj1JpcsimQkYiOJfwsPUykUI5ZaspFbSgmBLER8IrQ3tqw==}
     engines: {node: '>=12.0.0'}
 
-  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/051b89e0c1fa5489ae3dc21bf40cd17443937efb:
-    resolution: {tarball: https://codeload.github.com/SmartAPIForge/protos/tar.gz/051b89e0c1fa5489ae3dc21bf40cd17443937efb}
+  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce:
+    resolution: {tarball: https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce}
     version: 1.0.0
 
   proxy-addr@2.0.7:
@@ -5340,6 +5347,8 @@ snapshots:
 
   diff@4.0.2: {}
 
+  dotenv@16.5.0: {}
+
   dprint-node@1.0.8:
     dependencies:
       detect-libc: 1.0.3
@@ -6632,7 +6641,7 @@ snapshots:
       '@types/node': 22.10.10
       long: 5.2.4
 
-  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/051b89e0c1fa5489ae3dc21bf40cd17443937efb: {}
+  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce: {}
 
   proxy-addr@2.0.7:
     dependencies:
