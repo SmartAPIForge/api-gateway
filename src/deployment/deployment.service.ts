@@ -9,6 +9,16 @@ import {
   RemoveServerRequest,
   RemoveServerResponse,
   DeploymentServiceClient,
+  GetDeploymentRequest,
+  GetDeploymentResponse,
+  ListDeploymentsRequest,
+  ListDeploymentsResponse,
+  DeleteDeploymentRequest,
+  DeleteDeploymentResponse,
+  StartDeploymentRequest,
+  StartDeploymentResponse,
+  StopDeploymentRequest,
+  StopDeploymentResponse,
 } from 'protos/gen/ts/deployment/deployment';
 
 @Injectable()
@@ -33,5 +43,30 @@ export class DeploymentService {
   removeServer(request: RemoveServerRequest): Promise<RemoveServerResponse> {
     const removeServerResponse = this.deploymentClient.removeServer(request);
     return lastValueFrom(removeServerResponse);
+  }
+
+  getDeployment(request: GetDeploymentRequest): Promise<GetDeploymentResponse> {
+    const getDeploymentResponse = this.deploymentClient.getDeployment(request);
+    return lastValueFrom(getDeploymentResponse);
+  }
+
+  listDeployments(request: ListDeploymentsRequest): Promise<ListDeploymentsResponse> {
+    const listDeploymentsResponse = this.deploymentClient.listDeployments(request);
+    return lastValueFrom(listDeploymentsResponse);
+  }
+
+  deleteDeployment(request: DeleteDeploymentRequest): Promise<DeleteDeploymentResponse> {
+    const deleteDeploymentResponse = this.deploymentClient.deleteDeployment(request);
+    return lastValueFrom(deleteDeploymentResponse);
+  }
+
+  startDeployment(request: StartDeploymentRequest): Promise<StartDeploymentResponse> {
+    const startDeploymentResponse = this.deploymentClient.startDeployment(request);
+    return lastValueFrom(startDeploymentResponse);
+  }
+
+  stopDeployment(request: StopDeploymentRequest): Promise<StopDeploymentResponse> {
+    const stopDeploymentResponse = this.deploymentClient.stopDeployment(request);
+    return lastValueFrom(stopDeploymentResponse);
   }
 }

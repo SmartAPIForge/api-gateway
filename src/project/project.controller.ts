@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -22,7 +23,7 @@ import {
   GetFilteredProjectsRequest,
   Owner
 } from 'protos/gen/ts/project/project';
-import { Observable, map } from 'rxjs';
+import {Observable, map, catchError, throwError, interval, mergeWith} from 'rxjs';
 import { UsersService } from '../users/users.service';
 import {
   GetAllProjectsRequestDto,
@@ -36,8 +37,6 @@ import {
 
 @ApiTags('Projects')
 @Controller('projects')
-@UseGuards(AuthGuard)
-@RequiredRole(Role.DEFAULT)
 export class ProjectController {
   private readonly logger = new Logger(ProjectController.name);
 
@@ -152,17 +151,37 @@ export class ProjectController {
     return this.projectService.deleteProject(request);
   }
 
-  @Sse('updates/:owner')
-  @RequiredRole(Role.DEFAULT)
-  @UseGuards(AuthGuard)
+  @Sse('updates')
   @ApiOperation({ summary: 'Stream project updates' })
-  @ApiParam({ name: 'owner', description: 'Project owner' })
   @ApiResponse({ type: ProjectResponseDto, status: 200 })
-  streamUserProjectsUpdates(@Param('owner') owner: string): Observable<{ data: any }> {
-    const request: Owner = { owner };
-    this.logger.log(`Stream project updates request: ${JSON.stringify(request)}`);
-    return this.projectService.streamUserProjectsUpdates(request).pipe(
-      map(event => ({ data: event }))
-    );
+  async streamUserProjectsUpdates(
+      @Query('token') token: string,
+  ): Promise<Observable<{ data: any }>> {
+    if (!token) {
+      throw new BadRequestException('Token is required');
+    }
+
+    try {
+      const user = await this.usersService.getUserByToken({
+        AccessToken: token,
+      });
+
+      const request: Owner = { owner: user.Username };
+      this.logger.log(`Stream project updates request: ${JSON.stringify(request)}`);
+
+      return this.projectService.streamUserProjectsUpdates(request).pipe(
+        map(event => ({ data: event })),
+        mergeWith(interval(30000).pipe(
+          map(() => ({ data: { type: 'heartbeat' } }))
+        )),
+        catchError(error => {
+          this.logger.error(`Stream error: ${error.message}`);
+          return throwError(() => new Error('Stream error occurred'));
+        })
+      );
+    } catch (error) {
+      this.logger.error(`Failed to initialize SSE stream: ${error.message}`);
+      throw error;
+    }
   }
 }

@@ -28,7 +28,7 @@ importers:
         version: 16.5.0
       protos:
         specifier: github:SmartAPIForge/protos#main
-        version: https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce
+        version: https://codeload.github.com/SmartAPIForge/protos/tar.gz/ef3beef6fdd0053c02d6a0cb0e5ab0278cac8c6a
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2893,8 +2893,8 @@ packages:
     resolution: {integrity: sha512-mRUWCc3KUU4w1jU8sGxICXH/gNS94DvI1gxqDvBzhj1JpcsimQkYiOJfwsPUykUI5ZaspFbSgmBLER8IrQ3tqw==}
     engines: {node: '>=12.0.0'}
 
-  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce:
-    resolution: {tarball: https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce}
+  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/ef3beef6fdd0053c02d6a0cb0e5ab0278cac8c6a:
+    resolution: {tarball: https://codeload.github.com/SmartAPIForge/protos/tar.gz/ef3beef6fdd0053c02d6a0cb0e5ab0278cac8c6a}
     version: 1.0.0
 
   proxy-addr@2.0.7:
@@ -6641,7 +6641,7 @@ snapshots:
       '@types/node': 22.10.10
       long: 5.2.4
 
-  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/984b43e7ffab0cbef8a30751268c1789275312ce: {}
+  protos@https://codeload.github.com/SmartAPIForge/protos/tar.gz/ef3beef6fdd0053c02d6a0cb0e5ab0278cac8c6a: {}
 
   proxy-addr@2.0.7:
     dependencies:
