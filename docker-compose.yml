@@ -10,10 +10,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - AUTH_SERVICE_URL=auth-service:50051
-      - CODEGEN_SERVICE_URL=codegen-service:50052
-      - PROJECT_SERVICE_URL=project-service:50053
-      - DEPLOYMENT_SERVICE_URL=deployment-service:50059
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - CODEGEN_SERVICE_URL=${CODEGEN_SERVICE_URL}
+      - PROJECT_SERVICE_URL=${PROJECT_SERVICE_URL}
+      - DEPLOYMENT_SERVICE_URL=${DEPLOYMENT_SERVICE_URL}
       - PORT=3000
     networks:
       - app-network
