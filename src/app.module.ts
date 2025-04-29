@@ -12,6 +12,8 @@ import { CodegenModule } from './codegen/codegen.module';
 import { ProjectModule } from './project/project.module';
 import { UsersModule } from './users/users.module';
 
+console.log(process.env);
+
 @Module({
   imports: [
     AuthModule, 
