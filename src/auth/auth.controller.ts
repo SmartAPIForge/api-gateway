@@ -11,6 +11,9 @@ import {
   RegisterRequestDto, 
   LoginRequestDto, 
   RefreshRequestDto,
+  AuthResponseDto,
+  ValidateResponseDto,
+  RegisterResponseDto
 } from './dto/auth.dto';
 
 @ApiTags('Authentication')
@@ -25,11 +28,11 @@ export class AuthController {
   @ApiResponse({ 
     status: 201, 
     description: 'User successfully registered',
-    type: RegisterRequestDto 
+    type: RegisterResponseDto 
   })
   @ApiResponse({ status: 400, description: 'Bad request - Invalid input data' })
   @Post('register')
-  async register(@Body() request: RegisterRequest) {
+  async register(@Body() request: RegisterRequest): Promise<RegisterResponseDto> {
     this.logger.log(`Register request: ${JSON.stringify(request)}`);
     return await this.authService.register(request);
   }
@@ -39,18 +42,23 @@ export class AuthController {
   @ApiResponse({ 
     status: 200, 
     description: 'User successfully logged in',
-    type: LoginRequestDto 
+    type: AuthResponseDto 
   })
   @ApiResponse({ status: 401, description: 'Unauthorized - Invalid credentials' })
   @Post('login')
-  async login(@Body() request: LoginRequest) {
+  async login(@Body() request: LoginRequest): Promise<AuthResponseDto> {
     this.logger.log(`Login request: ${JSON.stringify(request)}`);
     return await this.authService.login(request);
   }
 
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Token validation result',
+    type: ValidateResponseDto 
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized - Invalid token' })
   @Post('validate')
-  async validateUser(@Headers() headers: ValidateHeaderDto) {
+  async validateUser(@Headers() headers: ValidateHeaderDto): Promise<ValidateResponseDto> {
     this.logger.log(`Validate user request: ${JSON.stringify(headers)}`);
     return await this.authService.validateUser({
       accessToken: headers.authorization,
@@ -63,11 +71,11 @@ export class AuthController {
   @ApiResponse({ 
     status: 200, 
     description: 'Token successfully refreshed',
-    type: RefreshRequestDto 
+    type: AuthResponseDto 
   })
   @ApiResponse({ status: 401, description: 'Unauthorized - Invalid refresh token' })
   @Post('refresh')
-  async refresh(@Body() req: RefreshRequest) {
+  async refresh(@Body() req: RefreshRequest): Promise<AuthResponseDto> {
     this.logger.log(`Refresh request: ${JSON.stringify(req)}`);
     return await this.authService.refresh({ refreshToken: req.refreshToken });
   }

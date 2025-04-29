@@ -23,8 +23,24 @@ export class RefreshRequestDto {
 
 export class ValidateResponseDto {
   @ApiProperty({ description: 'Whether the token is valid' })
-  isValid: boolean;
+  valid: boolean;
+}
 
-  @ApiProperty({ description: 'User ID if token is valid', required: false })
-  userId?: string;
+export class AuthResponseDto {
+  @ApiProperty({
+    description: 'Access token for authentication',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    description: 'Refresh token for obtaining new access tokens',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  })
+  refreshToken: string;
+}
+
+export class RegisterResponseDto {
+  @ApiProperty({ description: 'User ID' })
+  userId: number;
 } 
