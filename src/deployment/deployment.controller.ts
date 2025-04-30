@@ -38,8 +38,8 @@ import { RequiredRole } from '../auth/required-role.decorator';
 import { Role } from '../auth/dto/validateHeaderDto';
 
 @Controller('deployment')
-// @UseGuards(AuthGuard)
-// @RequiredRole(Role.ADMIN)
+@UseGuards(AuthGuard)
+@RequiredRole(Role.ADMIN)
 export class DeploymentController {
   private readonly logger = new Logger(DeploymentController.name);
 
